@@ -26,7 +26,7 @@ const sendConfirmationEmail = async (email, token) => {
     from: process.env.EMAIL_USER,
     to: email,
     subject: "Confirmation d'inscription",
-    html: `<p>Bienvenue sur notre site ! Cliquez sur le lien suivant pour confirmer l'inscription ">Confirmer l'inscription</a></p>`,
+    html: `<p>Bienvenue sur notre site ! Cliquez sur le lien suivant pour continuer votre inscription : <a href="${process.env.FRONT}/login?token=${token}">Confirmer l'inscription</a></p>`, // Incluez le token dans l'URL
   };
 
   await transporter.sendMail(mailOptions);
