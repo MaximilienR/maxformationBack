@@ -21,6 +21,17 @@ const sendMessage = async (email,token) => {
   await transporter.sendMail(mailOptions);
 };
 
+const sendConfirmationEmail = async (email, token) => {
+  const mailOptions = {
+    from: process.env.EMAIL_USER,
+    to: email,
+    subject: "Confirmation d'inscription",
+    html: `<p>Bienvenue sur notre site ! Cliquez sur le lien suivant pour confirmer l'inscription ">Confirmer l'inscription</a></p>`,
+  };
+
+  await transporter.sendMail(mailOptions);
+};
+
 module.exports={
-    sendMessage
+    sendMessage,sendConfirmationEmail
 }
