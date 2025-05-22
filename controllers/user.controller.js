@@ -41,7 +41,7 @@ const signup = async (req, res) => {
         // 5. Envoyer l'e-mail de confirmation
         await sendConfirmationEmail(email, token);
 
-        // 6. Enregistrer l'utilisateur temporaire dans le modèle TempUser
+        // 6.. Enregistrer l'utilisateur temporaire dans le modèle TempUser
         const tempUser = new TempUser({ // <-- UTILISEZ BIEN TempUser ICI !
             email,
             token,
