@@ -17,7 +17,7 @@ const createTokenEmail = (email) => {
 const signup = async (req, res) => {
   console.log("Requête d'inscription reçue:", req.body);
   try {
-    const { email, username, password } = req.body;
+    const { email, pseudo, password } = req.body;
 
     // 1. Vérifier si un compte définitif existe déjà avec cet e-mail
     const existingUser = await User.findOne({ email });
@@ -50,7 +50,7 @@ const signup = async (req, res) => {
       // <-- UTILISEZ BIEN TempUser ICI !
       email,
       token,
-      username, // <-- Ajoutez 'username'
+      pseudo, // <-- Ajoutez 'username'
       password: hashedPassword, // <-- Ajoutez le mot de passe HACHÉ
     });
     await tempUser.save(); // Cette sauvegarde devrait maintenant réussir
@@ -154,7 +154,7 @@ const login = async (req, res) => {
       }
 
       user = new User({
-        username: tempUser.username,
+        pseudo: tempUser.pseudo,
         email: tempUser.email,
         password: tempUser.password,
       });
