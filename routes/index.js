@@ -1,3 +1,5 @@
+const cors = require('cors');
+
 const router = require("express").Router();
 
 const apiUser=require('./user.route');

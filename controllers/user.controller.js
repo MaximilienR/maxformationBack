@@ -131,50 +131,48 @@ const login = async (req, res) => {
     const { email, password } = req.body;
     console.log("Tentative de connexion:", email);
 
-    let user = await User.findOne({ email });
+    let user = await User.findOne({ email }) || await TempUser.findOne({ email });
+    const isTemp = user instanceof TempUser;
 
     if (!user) {
-      const tempUser = await TempUser.findOne({ email });
-      if (!tempUser) {
-        return res
-          .status(400)
-          .json({ msg: "Email et/ou mot de passe incorrect" });
-      }
-      if (!tempUser.password) {
-        return res
-          .status(500)
-          .json({ msg: "Mot de passe temporaire introuvable" });
+      return res.status(400).json({ msg: "Email et/ou mot de passe incorrect" });
+    }
+
+    // Vérifier le blocage
+    if (user.lockUntil && user.lockUntil > Date.now()) {
+      return res.status(403).json({ msg: "Compte bloqué temporairement. Réessayez plus tard." });
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      // Incrémenter les tentatives échouées
+      user.failedLoginAttempts = (user.failedLoginAttempts || 0) + 1;
+
+      // Bloquer après 3 tentatives
+      if (user.failedLoginAttempts >= 3) {
+        user.lockUntil = new Date(Date.now() + 48 * 60 * 60 * 1000); // 48h
+        user.failedLoginAttempts = 0; // reset
       }
 
-      const isMatch = await bcrypt.compare(password, tempUser.password);
-      if (!isMatch) {
-        return res
-          .status(400)
-          .json({ msg: "Email et/ou mot de passe incorrect" });
-      }
-
-      user = new User({
-        pseudo: tempUser.pseudo,
-        email: tempUser.email,
-        password: tempUser.password,
-      });
       await user.save();
-      await TempUser.deleteOne({ email: tempUser.email });
+      return res.status(400).json({ msg: "Email et/ou mot de passe incorrect" });
+    }
 
-      console.log("Compte temporaire validé et transféré vers User :", email);
+    // Si match, reset les tentatives
+    user.failedLoginAttempts = 0;
+    user.lockUntil = null;
+
+    if (isTemp) {
+      const permanentUser = new User({
+        pseudo: user.pseudo,
+        email: user.email,
+        password: user.password,
+      });
+      await permanentUser.save();
+      await TempUser.deleteOne({ email: user.email });
+      user = permanentUser;
     } else {
-      if (!user.password) {
-        return res
-          .status(500)
-          .json({ msg: "Mot de passe utilisateur introuvable" });
-      }
-
-      const passwordMatch = await bcrypt.compare(password, user.password);
-      if (!passwordMatch) {
-        return res
-          .status(400)
-          .json({ msg: "Email et/ou mot de passe incorrect" });
-      }
+      await user.save();
     }
 
     const { password: pwd, ...userWithoutPassword } = user.toObject();
@@ -198,4 +196,19 @@ const login = async (req, res) => {
     res.status(500).json({ msg: "Erreur serveur lors de la connexion." });
   }
 };
-module.exports = { signup, login, verifyMail };
+
+//delete user
+
+async function deleteUser(req, res) {
+  console.log("Requête deleteUser reçue, user:", req.user);
+  try {
+    // Exemple suppression utilisateur MongoDB
+    await User.findByIdAndDelete(req.user.id);
+    return res.json({ msg: "Compte supprimé avec succès" });
+  } catch (err) {
+    console.error("Erreur deleteUser:", err);
+    return res.status(500).json({ msg: "Erreur serveur lors de la suppression" });
+  }
+}
+
+module.exports = { signup, login, verifyMail, deleteUser };
