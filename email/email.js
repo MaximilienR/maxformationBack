@@ -32,6 +32,17 @@ const sendConfirmationEmail = async (email, token) => {
   await transporter.sendMail(mailOptions);
 };
 
+const sendConfirmAchat= async (email) => {
+  const mailOptions = {
+    from: process.env.EMAIL_USER,
+    to: email,
+    subject: "Confirmation de commande",
+    html: `<p>merci pour votre commande !</p>`, // Incluez le token dans l'URL
+  };
+
+  await transporter.sendMail(mailOptions);
+};
+
 module.exports={
-    sendMessage,sendConfirmationEmail
+    sendMessage,sendConfirmationEmail,sendConfirmAchat
 }

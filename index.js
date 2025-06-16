@@ -13,7 +13,7 @@ app.use(
     origin: allowedOrigin,
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
     credentials: true,
-    allowedHeaders: ["Content-Type"],
+    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
 const route = require("./routes");
