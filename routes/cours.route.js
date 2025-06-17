@@ -1,7 +1,8 @@
 const router = require("express").Router();
-const { createCours } = require("../controllers/cours.controller");
+const { createCours, deleteCours } = require("../controllers/cours.controller");
 
 // 🔹 Créer un cours
 router.post("/", createCours);
+router.delete("/:id", deleteCours);
 
 module.exports = router;

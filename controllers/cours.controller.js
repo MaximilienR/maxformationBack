@@ -23,6 +23,19 @@ const createCours = async (req, res) => {
   }
 };
 
+const deleteCours = async (req, res) => {
+  try {
+    const deleted = await Cours.findByIdAndDelete(req.params.id);
+    if (!deleted) {
+      return res.status(404).json({ message: "Cours non trouvé" });
+    }
+    res.json({ message: "Cours supprimé avec succès" });
+  } catch (error) {
+    console.error("Erreur lors de la suppression :", error);
+    res.status(500).json({ message: "Erreur serveur lors de la suppression" });
+  }
+};
+
 // (Même chose pour les autres fonctions create, getAll, update, delete...)
 
 module.exports = {
@@ -30,5 +43,5 @@ module.exports = {
   // exporte aussi les autres fonctions ici, ex:
   // getAllCours,
   // updateCours,
-  // deleteCours,
+  deleteCours,
 };
