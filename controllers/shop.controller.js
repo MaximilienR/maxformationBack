@@ -1,4 +1,4 @@
-const { sendConfirmAchat } = require("../utils/email");
+const { sendConfirmAchat } = require("../email/email");
 
 const sendShopMail = async (req, res) => {
   try {
@@ -10,10 +10,15 @@ const sendShopMail = async (req, res) => {
 
     await sendConfirmAchat(email);
 
-    res.status(200).json({ success: true, message: "Email de confirmation envoyé" });
+    res
+      .status(200)
+      .json({ success: true, message: "Email de confirmation envoyé" });
   } catch (error) {
     console.error("Erreur envoi mail:", error);
-    res.status(500).json({ success: false, error: "Erreur serveur lors de l'envoi de l'email" });
+    res.status(500).json({
+      success: false,
+      error: "Erreur serveur lors de l'envoi de l'email",
+    });
   }
 };
 
