@@ -1,6 +1,6 @@
 const Cours = require("../models/cours/cours.model"); // <-- Import du modèle
 
-// 🔹 Créer un cours
+// 🔹 Créer un cours.
 const createCours = async (req, res) => {
   try {
     console.log("Requête reçue, données:", req.body); // Pour debug
