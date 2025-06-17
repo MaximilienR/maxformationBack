@@ -131,16 +131,24 @@ const login = async (req, res) => {
     const { email, password } = req.body;
     console.log("Tentative de connexion:", email);
 
-    let user = await User.findOne({ email }) || await TempUser.findOne({ email });
+    let user =
+      (await User.findOne({ email })) || (await TempUser.findOne({ email }));
     const isTemp = user instanceof TempUser;
 
     if (!user) {
-      return res.status(400).json({ msg: "Email et/ou mot de passe incorrect" });
+      return res
+        .status(400)
+        .json({ msg: "Email et/ou mot de passe incorrect" });
     }
 
     // Vérifier le blocage
     if (user.lockUntil && user.lockUntil > Date.now()) {
-      return res.status(403).json({ msg: "Compte bloqué temporairement. Réessayez plus tard." });
+      const remainingMs = user.lockUntil - Date.now();
+      return res.status(403).json({
+        msg: "Compte bloqué temporairement.",
+        lockedUntil: user.lockUntil,
+        remainingTime: remainingMs, // utile pour un compte à rebours
+      });
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
@@ -150,12 +158,14 @@ const login = async (req, res) => {
 
       // Bloquer après 3 tentatives
       if (user.failedLoginAttempts >= 3) {
-        user.lockUntil = new Date(Date.now() + 48 * 60 * 60 * 1000); // 48h
+        user.lockUntil = new Date(Date.now() + 60 * 60 * 1000); // 1 heure
         user.failedLoginAttempts = 0; // reset
       }
 
       await user.save();
-      return res.status(400).json({ msg: "Email et/ou mot de passe incorrect" });
+      return res
+        .status(400)
+        .json({ msg: "Email et/ou mot de passe incorrect" });
     }
 
     // Si match, reset les tentatives
@@ -207,7 +217,9 @@ async function deleteUser(req, res) {
     return res.json({ msg: "Compte supprimé avec succès" });
   } catch (err) {
     console.error("Erreur deleteUser:", err);
-    return res.status(500).json({ msg: "Erreur serveur lors de la suppression" });
+    return res
+      .status(500)
+      .json({ msg: "Erreur serveur lors de la suppression" });
   }
 }
 
