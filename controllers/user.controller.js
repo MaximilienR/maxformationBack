@@ -207,6 +207,24 @@ const login = async (req, res) => {
   }
 };
 
+const updateUser = async (req, res) => {
+  try {
+    const userId = req.user.id; // Assure-toi que ton middleware met bien l'ID ici
+    const { pseudo, email } = req.body;
+
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      { pseudo, email },
+      { new: true }
+    );
+
+    res.status(200).json({ success: true, user: updatedUser });
+  } catch (error) {
+    console.error("Erreur updateUser:", error);
+    res.status(500).json({ success: false, msg: "Erreur serveur" });
+  }
+};
+
 //delete user
 
 async function deleteUser(req, res) {
@@ -223,4 +241,4 @@ async function deleteUser(req, res) {
   }
 }
 
-module.exports = { signup, login, verifyMail, deleteUser };
+module.exports = { signup, login, verifyMail, deleteUser, updateUser };

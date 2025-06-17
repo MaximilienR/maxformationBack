@@ -1,21 +1,20 @@
 const nodemailer = require("nodemailer");
 
 const transporter = nodemailer.createTransport({
-    service:"GMAIL",
-    auth:{
-        user:process.env.EMAIL_USER,
-        pass:process.env.EMAIL_PASS
-    }
-})
+  service: "GMAIL",
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
+  },
+});
 
-const sendMessage = async (email,token) => {
+const sendMessage = async (email, token) => {
   const mailOptions = {
     from: process.env.EMAIL_USER,
     to: email,
     subject: "accusé de reception",
 
     html: `<p>votre demande à bien était prise en compte...</p>`,
-
   };
 
   await transporter.sendMail(mailOptions);
@@ -32,17 +31,19 @@ const sendConfirmationEmail = async (email, token) => {
   await transporter.sendMail(mailOptions);
 };
 
-const sendConfirmAchat= async (email) => {
+const sendConfirmAchat = async (email) => {
   const mailOptions = {
     from: process.env.EMAIL_USER,
     to: email,
     subject: "Confirmation de commande",
-    html: `<p>merci pour votre commande !</p>`, // Incluez le token dans l'URL
+    html: `<p>merci pour votre commande !</p>`,
   };
 
   await transporter.sendMail(mailOptions);
 };
 
-module.exports={
-    sendMessage,sendConfirmationEmail,sendConfirmAchat
-}
+module.exports = {
+  sendMessage,
+  sendConfirmationEmail,
+  sendConfirmAchat,
+};
