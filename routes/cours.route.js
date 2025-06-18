@@ -3,18 +3,23 @@ const {
   getAllCours,
   createCours,
   deleteCours,
-  updateCours, // <- à importer
+  updateCours,
+  getCoursById, // ✅ On l'importe ici
 } = require("../controllers/cours.controller");
 
-// GET tous les cours
+// 🔹 Récupérer tous les cours
 router.get("/", getAllCours);
+
 // 🔹 Créer un cours
 router.post("/", createCours);
+
+// 🔹 Récupérer un cours par son ID ✅
+router.get("/:id", getCoursById);
 
 // 🔹 Supprimer un cours
 router.delete("/:id", deleteCours);
 
-// 🔹 🔧 Mettre à jour un cours
-router.put("/:id", updateCours); // ✅ AJOUTE CETTE ROUTE
+// 🔹 Mettre à jour un cours
+router.put("/:id", updateCours);
 
 module.exports = router;
