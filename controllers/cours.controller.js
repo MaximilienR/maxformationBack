@@ -15,13 +15,20 @@ const getAllCours = async (req, res) => {
 // 🔹 Créer un cours.
 const createCours = async (req, res) => {
   try {
-    console.log("Requête reçue, données:", req.body); // Pour debug
-    const { name, description, video } = req.body;
+    console.log("Requête reçue, données:", req.body);
+
+    const { name, description, video, image, niveau } = req.body;
+
+    if (!name || !image || !niveau) {
+      return res.status(400).json({ message: "Les champs name, image et niveau sont requis." });
+    }
 
     const newCours = new Cours({
       name,
       description,
-      video, // facultatif
+      video,
+      image,
+      niveau,
     });
 
     const savedCours = await newCours.save();
@@ -34,7 +41,6 @@ const createCours = async (req, res) => {
     });
   }
 };
-
 
 
 const deleteCours = async (req, res) => {
