@@ -1,5 +1,17 @@
 const Cours = require("../models/cours/cours.model"); // <-- Import du modèle
 
+
+
+const getAllCours = async (req, res) => {
+  try {
+    const cours = await Cours.find();
+    res.json(cours); // renvoyer la liste en JSON
+  } catch (error) {
+    console.error("Erreur lors de la récupération des cours :", error);
+    res.status(500).json({ message: "Erreur serveur lors de la récupération des cours" });
+  }
+};
+
 // 🔹 Créer un cours.
 const createCours = async (req, res) => {
   try {
@@ -22,6 +34,8 @@ const createCours = async (req, res) => {
     });
   }
 };
+
+
 
 const deleteCours = async (req, res) => {
   try {
@@ -64,7 +78,7 @@ const deleteCours = async (req, res) => {
 module.exports = {
   createCours,
   // exporte aussi les autres fonctions ici, ex:
-  // getAllCours,
+  getAllCours,
   updateCours,
   deleteCours,
 };

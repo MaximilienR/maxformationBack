@@ -1,10 +1,13 @@
 const router = require("express").Router();
 const {
+  getAllCours,
   createCours,
   deleteCours,
   updateCours, // <- à importer
 } = require("../controllers/cours.controller");
 
+// GET tous les cours
+router.get("/", getAllCours);
 // 🔹 Créer un cours
 router.post("/", createCours);
 
