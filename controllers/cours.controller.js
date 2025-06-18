@@ -36,12 +36,35 @@ const deleteCours = async (req, res) => {
   }
 };
 
-// (Même chose pour les autres fonctions create, getAll, update, delete...)
+ const updateCours = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { name, description, video } = req.body;
+
+    const updatedCours = await Cours.findByIdAndUpdate(
+      id,
+      { name, description, video },
+      { new: true } // <- retourne le cours mis à jour
+    );
+
+    if (!updatedCours) {
+      return res.status(404).json({ message: "Cours non trouvé" });
+    }
+
+    res.status(200).json(updatedCours);
+  } catch (error) {
+    console.error("Erreur lors de la mise à jour du cours :", error);
+    res.status(500).json({
+      message: "Erreur serveur lors de la mise à jour du cours",
+      error: error.message,
+    });
+  }
+};
 
 module.exports = {
   createCours,
   // exporte aussi les autres fonctions ici, ex:
   // getAllCours,
-  // updateCours,
+  updateCours,
   deleteCours,
 };
