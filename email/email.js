@@ -20,6 +20,20 @@ const sendMessage = async (email, token) => {
   await transporter.sendMail(mailOptions);
 };
 
+const sendReset = async (email, token) => {
+  const mailOptions = {
+    from: process.env.EMAIL_USER,
+    to: email,
+    subject: "Réinitialisation de votre mot de passe",
+    html: `
+      <p>Vous avez demandé la réinitialisation de votre mot de passe.</p>
+    
+    `,
+  };
+
+  await transporter.sendMail(mailOptions);
+};
+
 const sendConfirmationEmail = async (email, token) => {
   const mailOptions = {
     from: process.env.EMAIL_USER,
@@ -46,4 +60,5 @@ module.exports = {
   sendMessage,
   sendConfirmationEmail,
   sendConfirmAchat,
+  sendReset,
 };

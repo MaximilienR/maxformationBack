@@ -2,10 +2,15 @@ const bcrypt = require("bcrypt");
 const TempUser = require("../models/user/tempUser");
 const User = require("../models/user/User");
 const jwt = require("jsonwebtoken");
-const { sendConfirmationEmail } = require("../email/email");
+const { sendConfirmationEmail, sendReset } = require("../email/email");
+
 const SECRET = process.env.SECRET_KEY;
 const SECRET_KEY =
   "803b3a856858df2230787355fcd88efb28e2bb4fca2aef64d26f103bcc9a7871fc64cdc840fb0acb0362f69447d895d8a31733be465570ae5ba3f997438022f2";
+
+const createResetToken = (email) => {
+  return jwt.sign({ email }, SECRET_KEY, { expiresIn: "15m" });
+};
 
 const createTokenEmail = (email) => {
   return jwt.sign({ email }, SECRET_KEY, {
@@ -241,4 +246,34 @@ async function deleteUser(req, res) {
   }
 }
 
-module.exports = { signup, login, verifyMail, deleteUser, updateUser };
+async function forgotPassword(req, res) {
+  const { email } = req.body;
+
+  try {
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ message: "Email non trouvé" });
+    }
+
+    const token = createResetToken(email);
+    user.resetToken = token;
+    user.resetTokenExpiration = Date.now() + 15 * 60 * 1000; // 15 minutes
+    await user.save();
+
+    await sendReset(email, token);
+
+    res.json({ message: "Email de réinitialisation envoyé" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Erreur serveur" });
+  }
+}
+
+module.exports = {
+  signup,
+  login,
+  verifyMail,
+  deleteUser,
+  updateUser,
+  forgotPassword,
+};
