@@ -27,7 +27,8 @@ const sendReset = async (email, token) => {
     subject: "Réinitialisation de votre mot de passe",
     html: `
       <p>Vous avez demandé la réinitialisation de votre mot de passe.</p>
-    
+      <p>Cliquez sur le lien ci-dessous pour réinitialiser votre mot de passe :</p>
+      <a href="http://localhost:5173/reset?token=${token}">Réinitialiser mon mot de passe</a>
     `,
   };
 
