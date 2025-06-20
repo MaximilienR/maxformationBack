@@ -4,6 +4,7 @@ const coursSchema = new mongoose.Schema(
   {
     name: { type: String, required: true },
     description: { type: String },
+    explication: { type: String }, // ✅ Champ ajouté
     video: { type: String }, // URL ou chemin de la vidéo, optionnel
     image: { type: String }, // URL ou chemin de l’image d’illustration
     niveau: {

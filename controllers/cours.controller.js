@@ -7,7 +7,9 @@ const getAllCours = async (req, res) => {
     res.json(cours);
   } catch (error) {
     console.error("Erreur lors de la récupération des cours :", error);
-    res.status(500).json({ message: "Erreur serveur lors de la récupération des cours" });
+    res
+      .status(500)
+      .json({ message: "Erreur serveur lors de la récupération des cours" });
   }
 };
 
@@ -21,7 +23,9 @@ const getCoursById = async (req, res) => {
     res.status(200).json(cours);
   } catch (error) {
     console.error("Erreur lors de la récupération du cours :", error);
-    res.status(500).json({ message: "Erreur lors de la récupération du cours." });
+    res
+      .status(500)
+      .json({ message: "Erreur lors de la récupération du cours." });
   }
 };
 
@@ -30,15 +34,18 @@ const createCours = async (req, res) => {
   try {
     console.log("Requête reçue, données:", req.body);
 
-    const { name, description, video, image, niveau } = req.body;
+    const { name, description, explication, video, image, niveau } = req.body;
 
     if (!name || !image || !niveau) {
-      return res.status(400).json({ message: "Les champs name, image et niveau sont requis." });
+      return res
+        .status(400)
+        .json({ message: "Les champs name, image et niveau sont requis." });
     }
 
     const newCours = new Cours({
       name,
       description,
+      explication, // ✅ champ ajouté ici
       video,
       image,
       niveau,
@@ -73,11 +80,11 @@ const deleteCours = async (req, res) => {
 const updateCours = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, description, video } = req.body;
+    const { name, description, explication, video, image, niveau } = req.body;
 
     const updatedCours = await Cours.findByIdAndUpdate(
       id,
-      { name, description, video },
+      { name, description, explication, video, image, niveau }, // ✅ explication ajouté ici
       { new: true }
     );
 
