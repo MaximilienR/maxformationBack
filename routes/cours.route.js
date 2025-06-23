@@ -5,6 +5,7 @@ const {
   deleteCours,
   updateCours,
   getCoursById, // ✅ On l'importe ici
+  createQuizz,
 } = require("../controllers/cours.controller");
 
 // 🔹 Récupérer tous les cours
@@ -21,5 +22,9 @@ router.delete("/:id", deleteCours);
 
 // 🔹 Mettre à jour un cours
 router.put("/:id", updateCours);
+
+//// 🔹 Créer un quizz
+
+router.post("/", createQuizz);
 
 module.exports = router;
