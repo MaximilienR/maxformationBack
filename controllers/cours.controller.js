@@ -1,5 +1,6 @@
-const Cours = require("../models/cours/cours.model"); // ✅ Chemin correct vers le modèle
-const Quiz = require("../models/quizz/Quizz"); // 🔹 N'oublie pas d'importer ton modèle Quiz
+const mongoose = require("mongoose"); // ⚠️ Il manquait l'import mongoose
+const Cours = require("../models/cours/cours.model");
+const Quiz = require("../models/quizz/Quizz"); // Un seul import, cohérent
 
 // 🔹 Récupérer tous les cours
 const getAllCours = async (req, res) => {
@@ -52,10 +53,9 @@ const createCours = async (req, res) => {
       image,
       niveau,
     });
-
     const savedCours = await newCours.save();
 
-    // 👇 Création du quiz si fourni
+    // Création du quiz si fourni
     if (quiz && quiz.question && quiz.answers?.length === 4) {
       const newQuiz = new Quiz({
         coursId: savedCours._id,
@@ -63,7 +63,6 @@ const createCours = async (req, res) => {
         reponse: quiz.answers,
         reponseCorrect: quiz.correctAnswerIndex,
       });
-
       await newQuiz.save();
     }
 
@@ -117,7 +116,7 @@ const updateCours = async (req, res) => {
   }
 };
 
-// 🔹 Créer un quiz séparément (si tu veux une route /quizz indépendante)
+// 🔹 Créer un quiz séparément
 const createQuizz = async (req, res) => {
   try {
     const { coursId, question, reponse, reponseCorrect } = req.body;
@@ -135,13 +134,7 @@ const createQuizz = async (req, res) => {
       });
     }
 
-    const newQuiz = new Quiz({
-      coursId,
-      question,
-      reponse,
-      reponseCorrect,
-    });
-
+    const newQuiz = new Quiz({ coursId, question, reponse, reponseCorrect });
     const savedQuiz = await newQuiz.save();
     res.status(201).json(savedQuiz);
   } catch (err) {
@@ -153,7 +146,34 @@ const createQuizz = async (req, res) => {
   }
 };
 
-// ✅ Exports
+// 🔹 Récupérer le quiz d'un cours par l'ID du cours
+const getQuizzByCoursId = async (req, res) => {
+  try {
+    const { coursId } = req.params;
+    console.log("Recherche quiz pour coursId :", coursId);
+
+    // mongoose.Types.ObjectId si besoin de convertir
+    const quiz = await Quiz.findOne({
+      coursId: new mongoose.Types.ObjectId(coursId),
+    });
+
+    if (!quiz) {
+      console.log("Quiz non trouvé pour ce cours.");
+      return res
+        .status(404)
+        .json({ message: "Quiz non trouvé pour ce cours." });
+    }
+
+    res.status(200).json(quiz);
+  } catch (error) {
+    console.error("Erreur lors de la récupération du quiz :", error);
+    res.status(500).json({
+      message: "Erreur serveur lors de la récupération du quiz",
+      error: error.message,
+    });
+  }
+};
+
 module.exports = {
   getAllCours,
   getCoursById,
@@ -161,4 +181,5 @@ module.exports = {
   deleteCours,
   updateCours,
   createQuizz,
+  getQuizzByCoursId,
 };
