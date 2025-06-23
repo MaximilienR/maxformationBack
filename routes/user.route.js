@@ -5,7 +5,8 @@ const {
   verifyMail,
   deleteUser,
   updateUser,
-  forgotPassword, // corrigé l'orthographe ici
+  forgotPassword,
+  resetPassword,
 } = require("../controllers/user.controller");
 
 const router = require("express").Router();
@@ -18,5 +19,5 @@ router.delete("/delete", authMiddleware, deleteUser); // ✅ méthode DELETE
 router.get("/verify/:token", verifyMail);
 
 router.post("/forgot", forgotPassword);
-
+router.post("/resetPassword", resetPassword);
 module.exports = router;
