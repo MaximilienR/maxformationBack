@@ -29,9 +29,7 @@ const getCoursById = async (req, res) => {
       .status(500)
       .json({ message: "Erreur lors de la récupération du cours." });
   }
-};
-
-// 🔹 Créer un cours (et son quiz s'il est fourni)
+}; // 🔹 Créer un cours (et plusieurs quiz s'ils sont fournis)
 const createCours = async (req, res) => {
   try {
     console.log("Requête reçue, données:", req.body);
@@ -55,15 +53,15 @@ const createCours = async (req, res) => {
     });
     const savedCours = await newCours.save();
 
-    // Création du quiz si fourni
-    if (quiz && quiz.question && quiz.answers?.length === 4) {
-      const newQuiz = new Quiz({
+    // Création des quiz si fournis et sous forme de tableau
+    if (Array.isArray(quiz) && quiz.length > 0) {
+      const quizzesToCreate = quiz.map((q) => ({
         coursId: savedCours._id,
-        question: quiz.question,
-        reponse: quiz.answers,
-        reponseCorrect: quiz.correctAnswerIndex,
-      });
-      await newQuiz.save();
+        question: q.question,
+        reponse: q.answers,
+        reponseCorrect: q.correctAnswerIndex,
+      }));
+      await Quiz.insertMany(quizzesToCreate);
     }
 
     res.status(201).json(savedCours);
@@ -153,10 +151,9 @@ const getQuizzByCoursId = async (req, res) => {
     console.log("Recherche quiz pour coursId :", coursId);
 
     // mongoose.Types.ObjectId si besoin de convertir
-    const quiz = await Quiz.findOne({
+    const quiz = await Quiz.find({
       coursId: new mongoose.Types.ObjectId(coursId),
     });
-
     if (!quiz) {
       console.log("Quiz non trouvé pour ce cours.");
       return res
