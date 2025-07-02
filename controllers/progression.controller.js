@@ -25,10 +25,13 @@ async function createOrUpdateProgression(req, res) {
 }
 
 async function getUserProgressions(req, res) {
-  const userId = req.user.id; // <-- ici aussi
+  const userId = req.user.id;
 
   try {
-    const progressions = await Progression.find({ userId });
+    const progressions = await Progression.find({ userId })
+      .populate("coursId") // ← ajoute ce populate ici
+      .exec();
+
     res.status(200).json(progressions);
   } catch (err) {
     res.status(500).json({ message: "Erreur progression", error: err.message });
