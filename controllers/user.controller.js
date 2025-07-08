@@ -214,14 +214,21 @@ const login = async (req, res) => {
 
 const updateUser = async (req, res) => {
   try {
-    const userId = req.user.id; // Assure-toi que ton middleware met bien l'ID ici
-    const { pseudo, email } = req.body;
+    const userId = req.user.id;
+    const { pseudo, email, password } = req.body;
 
-    const updatedUser = await User.findByIdAndUpdate(
-      userId,
-      { pseudo, email },
-      { new: true }
-    );
+    const updateFields = { pseudo, email };
+
+    // Si un mot de passe est fourni, on le hash avant update
+    if (password) {
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(password, salt);
+      updateFields.password = hashedPassword;
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(userId, updateFields, {
+      new: true,
+    });
 
     res.status(200).json({ success: true, user: updatedUser });
   } catch (error) {
@@ -229,7 +236,6 @@ const updateUser = async (req, res) => {
     res.status(500).json({ success: false, msg: "Erreur serveur" });
   }
 };
-
 //delete user
 
 async function deleteUser(req, res) {
