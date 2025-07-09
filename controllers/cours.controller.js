@@ -81,7 +81,11 @@ const deleteCours = async (req, res) => {
     if (!deleted) {
       return res.status(404).json({ message: "Cours non trouvé" });
     }
-    res.json({ message: "Cours supprimé avec succès" });
+
+    // Supprimer les quiz associés à ce cours
+    await Quiz.deleteMany({ coursId: req.params.id });
+
+    res.json({ message: "Cours et quiz associés supprimés avec succès" });
   } catch (error) {
     console.error("Erreur lors de la suppression :", error);
     res.status(500).json({ message: "Erreur serveur lors de la suppression" });
