@@ -57,9 +57,26 @@ const sendConfirmAchat = async (email) => {
   await transporter.sendMail(mailOptions);
 };
 
+const sendMessageToAdmin = async (userEmail, subject, message) => {
+  const mailOptions = {
+    from: process.env.EMAIL_USER, // ton email admin
+    to: process.env.EMAIL_ADMIN, // l'admin reçoit sur son propre mail
+    subject: `Nouveau message de contact : ${subject}`,
+    html: `
+      <h2>Nouvelle demande de contact</h2>
+      <p><strong>De :</strong> ${userEmail}</p>
+      <p><strong>Sujet :</strong> ${subject}</p>
+      <p><strong>Message :</strong><br/>${message}</p>
+    `,
+  };
+
+  await transporter.sendMail(mailOptions);
+};
+
 module.exports = {
   sendMessage,
   sendConfirmationEmail,
   sendConfirmAchat,
   sendReset,
+  sendMessageToAdmin,
 };
