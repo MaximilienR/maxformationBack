@@ -12,10 +12,8 @@ const {
 // Routes Cours
 router.get("/", getAllCours);
 router.get("/:id", getCoursById);
-
 router.post("/", createCours);
 router.put("/:id", updateCours);
-
 router.delete("/:id", deleteCours);
 
 // Routes Quizz
