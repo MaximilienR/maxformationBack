@@ -8,16 +8,16 @@ const schema = new mongoose.Schema(
     role: {
       type: String,
       enum: ["admin", "user"],
-      default: "user"
+      default: "user",
     },
     failedLoginAttempts: {
-  type: Number,
-  default: 0
-},
-lockUntil: {
-  type: Date,
-  default: null
-}
+      type: Number,
+      default: 0,
+    },
+    lockUntil: {
+      type: Date,
+      default: null,
+    },
   },
   {
     timestamps: true,

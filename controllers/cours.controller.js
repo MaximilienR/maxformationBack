@@ -1,6 +1,6 @@
-const mongoose = require("mongoose"); // ⚠️ Il manquait l'import mongoose
+const mongoose = require("mongoose");
 const Cours = require("../models/cours/cours.model");
-const Quiz = require("../models/quizz/Quizz"); // Un seul import, cohérent
+const Quiz = require("../models/quizz/Quizz");
 
 // 🔹 Récupérer tous les cours
 const getAllCours = async (req, res) => {

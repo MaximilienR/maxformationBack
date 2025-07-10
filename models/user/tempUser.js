@@ -5,7 +5,7 @@ const tempUserSchema = new mongoose.Schema(
     pseudo: String,
     email: { type: String, required: true, unique: true },
     token: String,
-    password: String, // vérifie bien ce nom
+    password: String,
   },
   {
     timestamps: true,

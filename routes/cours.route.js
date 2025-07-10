@@ -11,10 +11,12 @@ const {
 
 // Routes Cours
 router.get("/", getAllCours);
-router.post("/", createCours);
 router.get("/:id", getCoursById);
-router.delete("/:id", deleteCours);
+
+router.post("/", createCours);
 router.put("/:id", updateCours);
+
+router.delete("/:id", deleteCours);
 
 // Routes Quizz
 router.post("/quizz", createQuizz);
