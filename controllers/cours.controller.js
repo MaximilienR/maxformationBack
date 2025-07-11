@@ -93,10 +93,12 @@ const deleteCours = async (req, res) => {
 };
 
 // 🔹 Mettre à jour un cours
+// 🔹 Mettre à jour un cours
 const updateCours = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, description, explication, video, image, niveau } = req.body;
+    const { name, description, explication, video, image, niveau, quiz } =
+      req.body;
 
     const updatedCours = await Cours.findByIdAndUpdate(
       id,
@@ -106,6 +108,22 @@ const updateCours = async (req, res) => {
 
     if (!updatedCours) {
       return res.status(404).json({ message: "Cours non trouvé" });
+    }
+
+    // 🔴 Mettre à jour les quiz si fournis
+    if (Array.isArray(quiz)) {
+      // Supprimer les quiz existants pour ce cours
+      await Quiz.deleteMany({ coursId: id });
+
+      // Recréer les quiz à jour
+      const quizzesToCreate = quiz.map((q) => ({
+        coursId: id,
+        question: q.question,
+        reponse: q.answers,
+        reponseCorrect: q.correctAnswerIndex,
+      }));
+
+      await Quiz.insertMany(quizzesToCreate);
     }
 
     res.status(200).json(updatedCours);
@@ -175,6 +193,44 @@ const getQuizzByCoursId = async (req, res) => {
   }
 };
 
+// 🔹 Mettre à jour un quiz
+const updateQuizz = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { question, reponse, reponseCorrect } = req.body;
+
+    if (
+      !question ||
+      !reponse ||
+      reponse.length !== 4 ||
+      reponseCorrect == null
+    ) {
+      return res.status(400).json({
+        message:
+          "Les champs question, reponse (4 réponses) et reponseCorrect sont requis.",
+      });
+    }
+
+    const updatedQuizz = await Quiz.findByIdAndUpdate(
+      id,
+      { question, reponse, reponseCorrect },
+      { new: true }
+    );
+
+    if (!updatedQuizz) {
+      return res.status(404).json({ message: "Quiz non trouvé" });
+    }
+
+    res.status(200).json(updatedQuizz);
+  } catch (error) {
+    console.error("Erreur lors de la mise à jour du quiz :", error);
+    res.status(500).json({
+      message: "Erreur serveur lors de la mise à jour du quiz",
+      error: error.message,
+    });
+  }
+};
+
 module.exports = {
   getAllCours,
   getCoursById,
@@ -183,4 +239,5 @@ module.exports = {
   updateCours,
   createQuizz,
   getQuizzByCoursId,
+  updateQuizz,
 };
