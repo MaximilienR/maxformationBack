@@ -110,8 +110,12 @@ const updateCours = async (req, res) => {
       return res.status(404).json({ message: "Cours non trouvé" });
     }
 
-    // 🔴 Mettre à jour les quiz si fournis
-    if (Array.isArray(quiz)) {
+    // 🔴 Mettre à jour les quiz UNIQUEMENT si quiz est fourni ET contient des questions valides
+    if (
+      Array.isArray(quiz) &&
+      quiz.length > 0 &&
+      quiz.some((q) => q.question && q.answers && q.answers.length === 4)
+    ) {
       // Supprimer les quiz existants pour ce cours
       await Quiz.deleteMany({ coursId: id });
 
@@ -135,7 +139,6 @@ const updateCours = async (req, res) => {
     });
   }
 };
-
 // 🔹 Créer un quiz séparément
 const createQuizz = async (req, res) => {
   try {
